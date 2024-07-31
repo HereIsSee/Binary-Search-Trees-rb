@@ -71,21 +71,17 @@ class BalancedBinarySearchTree
     curr
   end
 
-  def find(value)
-    find_recursive(@root, value)
-  end
-
-  def find_recursive(root, value)
+  def find(value, root = @root)
     return root if root.nil?
     return root if root.value == value
 
     if root.value > value
-      root.left = find_recursive(root.left, value)
+      find(value, root.left)
     elsif root.value < value
-      root.right = find_recursive(root.right, value)
+      find(value, root.right)
     end
   end
-
+  
   def level_order(root = @root, &block)
     return if root.nil?
   
@@ -145,11 +141,27 @@ class BalancedBinarySearchTree
     array unless block_given?
   end
   
+  def height(node, root = @root, current_height = 0)
+    return -1 if root.nil? || node.nil?   # Return -1 if the tree or node is nil
+    return current_height if root == node # Return current height if the node is found
+  
+    if node.value < root.value
+      # Traverse the left subtree
+      height(node, root.left, current_height + 1)
+    elsif node.value > root.value
+      # Traverse the right subtree
+      height(node, root.right, current_height + 1)
+    else
+      # Node is not found
+      -1
+    end
+  end
+  
 
   def pretty_print(node = @root, prefix = '', is_left = true)
-    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) unless node.right.nil?
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
-    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) unless node.left.nil?
   end
  
 end
@@ -157,4 +169,8 @@ end
 tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
 puts "\n \n \n \n"
-p tree.postorder 
+tree.pretty_print(tree.find(6345))
+puts "\n \n \n \n"
+tree.pretty_print
+puts "\n \n \n \n"
+p tree.height(tree.find(1))
