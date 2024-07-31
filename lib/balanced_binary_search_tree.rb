@@ -18,31 +18,38 @@ class BalancedBinarySearchTree
 
     root
   end
+  def insert(value)
+    insert_recursive(value)
+    rebalance unless balanced?
+  end
 
-  def insert(value, root= @root)
+  def insert_recursive(value, root= @root)
     return puts "Value is already in tree" if value == root.value
   
     if value > root.value
       return root.right = TreeNode.new(value) if root.right.nil?
-      return insert(value, root.right)
-    end
-
-    if value < root.value
+      return insert_recursive(value, root.right)
+    elsif value < root.value
       return root.left = TreeNode.new(value) if root.left.nil?
-      return insert(value, root.left)
+      return insert_recursive(value, root.left)
     end
   end
 
-  def delete(root, value)
+  def delete(value)
+    delete_recursive(value)
+    rebalance unless balanced?
+  end
+  
+  def delete_recursive(value, root = @root)
     if root.nil?
       return root
     end
 
     if root.value > value
-      root.left = delete(root.left, value)
+      root.left = delete_recursive(value, root.left)
       
     elsif root.value < value
-      root.right = delete(root.right, value)
+      root.right = delete_recursive(value, root.right)
     else
       if root.left.nil?
         temp = root.right
@@ -58,7 +65,7 @@ class BalancedBinarySearchTree
 
       succ = get_successor(root)
       root.value = succ.value
-      root.right = delete(root.right, succ.value)
+      root.right = delete_recursive(succ.value, root.right)
     end
     root
   end
@@ -162,28 +169,22 @@ class BalancedBinarySearchTree
   end
 
   def balanced?(root = @root)
-
     return true if root.nil?
 
     left_tree_height = height(root.left)
     right_tree_height = height(root.right)
-    puts left_tree_height - right_tree_height
+    
     if ((left_tree_height - right_tree_height).abs <= 1) && balanced?(root.left) && balanced?(root.right)
       return true 
     end
 
-    return false
-    # return true if root.nil?
-
-    # return false if root.left.nil? && height(root.right) > 1
-    # return false if root.right.nil? && height(root.left) > 1
-
-    # return false if (height(root.left) - height(root.right)).abs > 1
-    # balanced?(root.left)
-    # balanced?(root.right)
+    false
   end
   
-
+  def rebalance
+    array = inorder()
+    @root = build_tree(array, 0, array.length-1)
+  end
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) unless node.right.nil?
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
@@ -191,13 +192,3 @@ class BalancedBinarySearchTree
   end
  
 end
-
-tree = BalancedBinarySearchTree.new([1, 2, 3, 4, 5])
-# tree.insert(6)
-# tree.insert(9002)
-tree.pretty_print
-puts "\n \n \n \n"
-puts "\n \n \n \n"
-tree.pretty_print
-puts "\n \n \n \n"
-p tree.balanced?
