@@ -86,6 +86,29 @@ class BalancedBinarySearchTree
     end
   end
 
+  def level_order(root = @root, &block)
+    return if root.nil?
+  
+    queue = [root]
+    result = []
+  
+    until queue.empty?
+      current = queue.shift
+  
+      if block_given?
+        yield current
+      else
+        result << current.value
+      end
+  
+      queue.push(current.left) if current.left
+      queue.push(current.right) if current.right
+    end
+  
+    result unless block_given?  # Return the result array if no block is given
+  end
+  
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
@@ -97,4 +120,4 @@ end
 tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
 puts "\n \n \n \n"
-tree.pretty_print(tree.find(3))
+p tree.level_order()
