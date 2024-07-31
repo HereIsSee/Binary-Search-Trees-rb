@@ -107,6 +107,43 @@ class BalancedBinarySearchTree
   
     result unless block_given?  # Return the result array if no block is given
   end
+
+  def inorder(root = @root, array = [], &block)
+    return array if root.nil?
+    
+    inorder(root.left, array, &block)
+
+    yield root if block_given?
+    array << root.value
+    
+    inorder(root.right, array, &block)
+
+    array unless block_given?
+  end
+
+  def preorder(root = @root, array = [], &block)
+    return array if root.nil?
+    
+    yield root if block_given?
+    array << root.value
+
+    preorder(root.left, array, &block)
+    preorder(root.right, array, &block)
+
+    array unless block_given?
+  end
+
+  def postorder(root = @root, array = [], &block)
+    return array if root.nil?
+    
+    postorder(root.left, array, &block)
+    postorder(root.right, array, &block)
+    
+    yield root if block_given?
+    array << root.value
+
+    array unless block_given?
+  end
   
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -120,4 +157,4 @@ end
 tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
 puts "\n \n \n \n"
-p tree.level_order()
+p tree.postorder 
