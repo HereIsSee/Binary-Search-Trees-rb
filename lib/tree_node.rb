@@ -1,3 +1,4 @@
+# A tree node used for a binary tree
 class TreeNode
   include Comparable
   attr_accessor :left, :right, :value
