@@ -19,17 +19,17 @@ class BalancedBinarySearchTree
     root
   end
 
-  def insert(root, value)
+  def insert(value, root= @root)
     return puts "Value is already in tree" if value == root.value
   
     if value > root.value
       return root.right = TreeNode.new(value) if root.right.nil?
-      return insert(root.right, value)
+      return insert(value, root.right)
     end
 
     if value < root.value
       return root.left = TreeNode.new(value) if root.left.nil?
-      return insert(root.left, value)
+      return insert(value, root.left)
     end
   end
 
@@ -141,11 +141,10 @@ class BalancedBinarySearchTree
     array unless block_given?
   end
   
-  def height(node, height= 0)
-    return height if node.right.nil? && node.left.nil? 
-  
-    height(node.left, height + 1) unless node.left.nil?
-    height(node.right, height + 1) unless node.right.nil?
+  def height(node)
+    return 0 if node.nil?
+    
+    return 1 + [height(node.left), height(node.right)].max
   end
 
   def depth(node, root = @root, current_depth = 0)
@@ -161,6 +160,28 @@ class BalancedBinarySearchTree
       -1
     end
   end
+
+  def balanced?(root = @root)
+
+    return true if root.nil?
+
+    left_tree_height = height(root.left)
+    right_tree_height = height(root.right)
+    puts left_tree_height - right_tree_height
+    if ((left_tree_height - right_tree_height).abs <= 1) && balanced?(root.left) && balanced?(root.right)
+      return true 
+    end
+
+    return false
+    # return true if root.nil?
+
+    # return false if root.left.nil? && height(root.right) > 1
+    # return false if root.right.nil? && height(root.left) > 1
+
+    # return false if (height(root.left) - height(root.right)).abs > 1
+    # balanced?(root.left)
+    # balanced?(root.right)
+  end
   
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -171,11 +192,12 @@ class BalancedBinarySearchTree
  
 end
 
-tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
+tree = BalancedBinarySearchTree.new([1, 2, 3, 4, 5])
+# tree.insert(6)
+# tree.insert(9002)
 tree.pretty_print
 puts "\n \n \n \n"
-tree.pretty_print(tree.find(6345))
 puts "\n \n \n \n"
 tree.pretty_print
 puts "\n \n \n \n"
-p tree.height(tree.find(67))
+p tree.balanced?
