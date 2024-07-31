@@ -141,18 +141,23 @@ class BalancedBinarySearchTree
     array unless block_given?
   end
   
-  def height(node, root = @root, current_height = 0)
-    return -1 if root.nil? || node.nil?   # Return -1 if the tree or node is nil
-    return current_height if root == node # Return current height if the node is found
+  def height(node, height= 0)
+    return height if node.right.nil? && node.left.nil? 
+  
+    height(node.left, height + 1) unless node.left.nil?
+    height(node.right, height + 1) unless node.right.nil?
+  end
+
+  def depth(node, root = @root, current_depth = 0)
+    return -1 if root.nil? || node.nil?
+    return current_depth if root == node
   
     if node.value < root.value
-      # Traverse the left subtree
-      height(node, root.left, current_height + 1)
+      depth(node, root.left, current_depth + 1)
     elsif node.value > root.value
-      # Traverse the right subtree
-      height(node, root.right, current_height + 1)
+      depth(node, root.right, current_depth + 1)
     else
-      # Node is not found
+
       -1
     end
   end
@@ -173,4 +178,4 @@ tree.pretty_print(tree.find(6345))
 puts "\n \n \n \n"
 tree.pretty_print
 puts "\n \n \n \n"
-p tree.height(tree.find(1))
+p tree.height(tree.find(67))
