@@ -22,7 +22,6 @@ class BalancedBinarySearchTree
   def insert(root, value)
     return puts "Value is already in tree" if value == root.value
   
-
     if value > root.value
       return root.right = TreeNode.new(value) if root.right.nil?
       return insert(root.right, value)
@@ -32,6 +31,44 @@ class BalancedBinarySearchTree
       return root.left = TreeNode.new(value) if root.left.nil?
       return insert(root.left, value)
     end
+  end
+
+  def delete(root, value)
+    if root.nil?
+      return root
+    end
+
+    if root.value > value
+      root.left = delete(root.left, value)
+      
+    elsif root.value < value
+      root.right = delete(root.right, value)
+    else
+      if root.left.nil?
+        temp = root.right
+        root = nil
+        return temp
+      end
+
+      if root.right.nil?
+        temp = root.left
+        root = nil
+        return temp
+      end
+
+      succ = get_successor(root)
+      root.value = succ.value
+      root.right = delete(root.right, succ.value)
+    end
+    root
+  end
+
+  def get_successor(curr)
+    curr = curr.right
+    until curr.nil?  || curr.left.nil?
+      curr = curr.left
+    end
+    curr
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -44,6 +81,6 @@ end
 
 tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
-tree.insert(tree.root, 99)
+tree.delete(tree.root, 8)
 puts "\n \n \n \n"
 tree.pretty_print
