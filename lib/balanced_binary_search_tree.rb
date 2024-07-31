@@ -71,6 +71,21 @@ class BalancedBinarySearchTree
     curr
   end
 
+  def find(value)
+    find_recursive(@root, value)
+  end
+
+  def find_recursive(root, value)
+    return root if root.nil?
+    return root if root.value == value
+
+    if root.value > value
+      root.left = find_recursive(root.left, value)
+    elsif root.value < value
+      root.right = find_recursive(root.right, value)
+    end
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true)
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.value}"
@@ -81,6 +96,5 @@ end
 
 tree = BalancedBinarySearchTree.new([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324])
 tree.pretty_print
-tree.delete(tree.root, 8)
 puts "\n \n \n \n"
-tree.pretty_print
+tree.pretty_print(tree.find(3))
